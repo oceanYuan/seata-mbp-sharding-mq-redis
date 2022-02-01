@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/seata-order-sample/seata-order-sample.iml" filepath="$PROJECT_DIR$/seata-order-sample/seata-order-sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/seata-product-sample/seata-product-sample.iml" filepath="$PROJECT_DIR$/seata-product-sample/seata-product-sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springcloud-seata-sharding-jdbc-mybatis-plus-samples.iml" filepath="$PROJECT_DIR$/springcloud-seata-sharding-jdbc-mybatis-plus-samples.iml" />
+    </modules>
+  </component>
+</project>
