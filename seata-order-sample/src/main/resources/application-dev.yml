@@ -1,0 +1,100 @@
+logging:
+  level:
+    io:
+      seata: debug
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+seata:
+  application-id: order-server
+  config:
+    nacos:
+      group: SEATA_GROUP
+      password: nacos
+      server-addr: 127.0.0.1:8848
+      username: nacos
+    type: nacos
+  enable-auto-data-source-proxy: false
+  tx-service-group: my_test_tx_group
+server:
+  port: 8001
+spring:
+  application:
+    name: order-server
+  cloud:
+    nacos:
+      discovery:
+        group: LTF_GROUP
+        server-addr: 127.0.0.1:8848
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    datasource:
+      master0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/seata_order_0?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true
+        password: root
+        username: root
+        maxPoolSize: 100
+        minPoolSize: 5
+        keepAlive: true
+      master1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/seata_order_1?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true
+        password: root
+        username: root
+        maxPoolSize: 100
+        minPoolSize: 5
+        keepAlive: true
+      slave0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/seata_order_0?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&useSSL=false
+        password: 123456
+        username: root
+        maxPoolSize: 100
+        minPoolSize: 5
+        keepAlive: true
+      slave1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/seata_order_1?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&useSSL=false
+        password: 123456
+        username: root
+        maxPoolSize: 100
+        minPoolSize: 5
+        keepAlive: true
+      names: master0,master1,slave0,slave1
+    props:
+      sql:
+        show: true
+    sharding:
+      default-database-strategy:
+        inline:
+          sharding-column: id
+          algorithm-expression: master$->{id % 2}
+      binding-tables:
+        - order_info
+      master-slave-rules:
+        master0:
+          masterDataSourceName: master0
+          slaveDataSourceNames: slave0
+        master1:
+          masterDataSourceName: master1
+          slaveDataSourceNames: slave1
+      tables:
+        order_info:
+          actualDataNodes: master$->{0..1}.order_info_$->{0..1}
+          tableStrategy:
+            inline:
+              shardingColumn: id
+              algorithmExpression: order_info_$->{id % 2}
+          keyGenerator:
+            type: SNOWFLAKE
+            column: id
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
