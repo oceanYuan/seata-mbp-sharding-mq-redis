@@ -11,7 +11,7 @@ seata:
     nacos:
       group: SEATA_GROUP
       password: nacos
-      server-addr: 110.40.132.196:8848
+      server-addr: 127.0.0.1:8848
       username: nacos
     type: nacos
   tx-service-group: my_test_tx_group
@@ -24,15 +24,15 @@ spring:
     nacos:
       discovery:
         group: LTF_GROUP
-        server-addr: 110.40.132.196:8848
+        server-addr: 127.0.0.1:8848
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: root
-    url: jdbc:mysql://110.40.132.196:3306/seata_product?serverTimezone=UTC&characterEncoding=utf8
+    url: jdbc:mysql://127.0.0.1:3306/seata_product?serverTimezone=UTC&characterEncoding=utf8
     username: root
   main:
     allow-bean-definition-overriding: true
   redis:
-    host: 110.40.132.196
+    host: 127.0.0.1
     port: 6379
