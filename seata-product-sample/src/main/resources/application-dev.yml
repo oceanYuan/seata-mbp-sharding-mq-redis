@@ -1,0 +1,38 @@
+logging:
+  level:
+    com:
+      qmp: debug
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+seata:
+  application-id: product-server
+  config:
+    nacos:
+      group: SEATA_GROUP
+      password: nacos
+      server-addr: 127.0.0.1:8848
+      username: nacos
+    type: nacos
+  tx-service-group: my_test_tx_group
+server:
+  port: 8002
+spring:
+  application:
+    name: product-server
+  cloud:
+    nacos:
+      discovery:
+        group: LTF_GROUP
+        server-addr: 127.0.0.1:8848
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: root
+    url: jdbc:mysql://127.0.0.1:3306/seata_product?serverTimezone=UTC&characterEncoding=utf8
+    username: root
+  main:
+    allow-bean-definition-overriding: true
+  redis:
+    host: 127.0.0.1
+    port: 6379

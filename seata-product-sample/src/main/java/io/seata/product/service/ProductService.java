@@ -1,18 +1,22 @@
 package io.seata.product.service;
 
-import io.seata.product.mapper.ProductMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.baomidou.mybatisplus.extension.service.IService;
+import io.seata.product.entity.Product;
 
-@Service
-@Transactional
-public class ProductService {
+/**
+ * @Author: OceanYuan
+ * @Date: 2022/3/3 15:57
+ */
+public interface ProductService extends IService<Product> {
 
-    @Autowired
-    private ProductMapper productMapper;
 
-    public void minusStock() {
-        productMapper.minusStock();
-    }
+     void minusStock();
+
+     int minusStockByList(Long id);
+
+     int minusStockByHash(Long id,String name);
+
+     int preAc(Long id);
+
+     int preAc();
 }
