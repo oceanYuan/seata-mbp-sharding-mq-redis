@@ -1,15 +1,14 @@
 package io.seata.product.controller;
 
+import io.seata.product.entity.Product;
 import io.seata.product.service.ProductService;
 import io.seata.product.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -45,8 +44,20 @@ public class ProductController {
         }else {
             flag = productService.preAc();
         }
-
+       //55*8
 
         return new R(flag,true,null,"预热成功");
+    }
+
+
+    @GetMapping("/getOne")
+    public R getGoodByLimit(@RequestParam Long id){
+        if (Optional.ofNullable(id).isPresent()){
+            Product one = productService.one(id);
+            return new R(one);
+        }else {
+            return new R("查无此商品");
+        }
+
     }
 }

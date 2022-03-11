@@ -50,21 +50,18 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         RLock redissonLock = redisson.getLock(key);
 
-        new Thread(() -> {
+//        new Thread(() -> {
             redissonLock.lock();
             try {
-                ProductVo product = (ProductVo) redisTemplate.opsForHash().get(id.toString(), name);
 
 
-                Integer stock = product.getStock();
-                if (stock==0){
+                Integer stock = (Integer) redisTemplate.opsForHash().get(id.toString(), name);
+                while (stock == 0){
                     productMapper.minusStockById(id);
-                    return;
+                    return 0;
                 }
-                stock = stock - 1;
-                product.setStock(stock);
-                redisTemplate.opsForHash().put(id.toString(),name,product);
-                this.redisTemplate.expire(id.toString(),60,TimeUnit.SECONDS);
+
+                redisTemplate.opsForHash().increment(id.toString(),name,-1);
 
 
             } catch (Exception e) {
@@ -72,7 +69,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             } finally {
                 redissonLock.unlock();
             }
-        }).start();
+//        }).start();
 
         return 1;
     }
@@ -121,25 +118,33 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public int preAc(Long id) {
 
         QueryWrapper<Product> qw = new QueryWrapper<>();
-        qw.lambda().eq(Product::getFlag, 1);
-        List<Product> products = productMapper.selectList(qw);
+        qw.lambda().eq(Product::getFlag, 1).eq(Product::getId,id);
+        Product product = productMapper.selectOne(qw);
 
-        products.stream().forEach(item -> {
-            String idstr = item.getId().toString();
-            Date createTime = item.getCreateTime();
-            Date updateTime = item.getUpdateTime();
-            Integer stock = item.getStock();
-            String productName = item.getProductName();
-
-            ProductVo productVo = ProductVo.builder()
-                    .id(idstr).productName(productName)
-                    .createTime(createTime).stock(stock)
-                    .updateTime(updateTime).build();
-
-            redisTemplate.opsForHash().put(idstr, productName, productVo);
-
-        });
-        return 1;
+        if (Optional.ofNullable(product).isPresent()){
+            Integer stock = product.getStock();
+            String productName = product.getProductName();
+            redisTemplate.opsForHash().put(id.toString(), productName, stock);
+            this.redisTemplate.expire(id.toString(),60,TimeUnit.MINUTES);
+            return 1;
+        }
+//        products.stream().forEach(item -> {
+//            String idstr = item.getId().toString();
+//            Date createTime = item.getCreateTime();
+//            Date updateTime = item.getUpdateTime();
+//            Integer stock = item.getStock();
+//            String productName = item.getProductName();
+//
+//            ProductVo productVo = ProductVo.builder()
+//                    .id(idstr).productName(productName)
+//                    .createTime(createTime).stock(stock)
+//                    .updateTime(updateTime).build();
+//
+//            redisTemplate.opsForHash().put(idstr, productName, productVo);
+//            this.redisTemplate.expire(idstr,60,TimeUnit.MINUTES);
+//
+//        });
+        return 0;
     }
 
     @Override
@@ -153,5 +158,14 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
 
         return 1;
+    }
+
+    @Override
+    public Product one(Long id) {
+
+        QueryWrapper<Product> qw  = new QueryWrapper<>();
+        qw.lambda().eq(Product::getId,id);
+        Product product = productMapper.selectOne(qw);
+        return product;
     }
 }

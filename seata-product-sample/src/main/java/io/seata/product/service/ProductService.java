@@ -19,4 +19,6 @@ public interface ProductService extends IService<Product> {
      int preAc(Long id);
 
      int preAc();
+
+     Product one(Long id);
 }
